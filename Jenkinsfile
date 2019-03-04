@@ -32,7 +32,7 @@ podTemplate(
         secretVolume(secretName: 'docker-config', mountPath: '/root/.docker'),
         secretVolume(secretName: 'kube-config', mountPath: '/root/.kube'),
         persistentVolumeClaim(mountPath: '/share', claimName: 'jenkins-slave-share'),
-        configMapVolume(mountPath: '/config', configMapName: 'hello-nginx-job-config')
+        configMapVolume(mountPath: '/config', configMapName: 'hello-spring-boot-job-config')
     ]
 )
 
@@ -53,8 +53,6 @@ podTemplate(
                 '''
             }
         }
-
-
 
     }
 
