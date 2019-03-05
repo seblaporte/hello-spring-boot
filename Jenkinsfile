@@ -28,7 +28,7 @@ podTemplate(
             ),
         containerTemplate(
             name: 'maven',
-            image: '3.6.0-jdk-8-alpine',
+            image: 'maven:3.6.0-jdk-8-alpine',
             command:'cat',
             ttyEnabled:true
         )
