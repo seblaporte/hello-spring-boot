@@ -21,7 +21,7 @@
 	<distributionManagement>
 		<snapshotRepository>
 			<id>nexus-snapshots</id>
-			<url>https://nexus.demo-pic.techlead-top.ovh/nexus/content/repositories/snapshots</url>
+			<url>https://nexus.demo-pic.techlead-top.ovh/repository/maven-snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
