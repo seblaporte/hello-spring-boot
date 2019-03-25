@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello-spring-boot
+  name: hello-spring-boot
+  namespace: demo-pic
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: hello-spring-boot
+  template:
+    metadata:
+      labels:
+        app: hello-spring-boot
+    spec:
+      containers:
+      - name: hello-spring-boot
+        image: registry.demo-pic.techlead-top.ovh/hello-spring-boot:latest
+        imagePullPolicy: Always
+        ports:
+          - name: web
+            containerPort: 8080
+      imagePullSecrets:
+        - name: docker-registry-config

@@ -1,76 +1,101 @@
 def label = "demo-pic-worker-${UUID.randomUUID().toString()}"
 
-podTemplate(
-    label: label,
-    containers: [
-        containerTemplate(
-            name: 'jnlp',
-            image: 'jenkins/jnlp-slave:3.10-1',
-            args: '${computer.jnlpmac} ${computer.name}'
-        ),
-        containerTemplate(
-            name: 'docker',
-            image: 'docker:stable',
-            command:'cat',
-            ttyEnabled:true,
-            envVars: [
-                envVar(key: 'DOCKER_CONFIG', value: '/root/.docker')
-            ]
-        ),
-        containerTemplate(
-            name: 'kubectl',
-            image: 'dtzar/helm-kubectl:2.13.0',
-            command:'cat',
-            ttyEnabled:true,
-            envVars: [
-                envVar(key: 'KUBECONFIG', value: '/root/.kube/config')
-            ]
-        ),
-        containerTemplate(
-            name: 'maven',
-            image: 'maven:3.6.0-jdk-8-alpine',
-            command:'cat',
-            ttyEnabled:true
-        )
-    ],
-    volumes: [
-        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
-        secretVolume(secretName: 'docker-config', mountPath: '/root/.docker'),
-        secretVolume(secretName: 'kube-config', mountPath: '/root/.kube'),
-        persistentVolumeClaim(mountPath: '/share', claimName: 'jenkins-slave-share'),
-        configMapVolume(mountPath: '/config', configMapName: 'hello-spring-boot-job-config'),
-        persistentVolumeClaim(mountPath: '/root/.m2', claimName: 'jenkins-maven-m2'),
-        secretVolume(secretName: 'maven-config', mountPath: '/usr/share/maven/ref')
-    ]
-)
+podTemplate(label: label, yaml: """
 
+kind: Pod
+metadata:
+  name: jnlp-kaniko-maven-kubectl
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    imagePullPolicy: Always
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+      - name: docker-config
+        mountPath: /kaniko/.docker/
+
+  - name: jnlp
+    image: jenkins/jnlp-slave:3.10-1
+    imagePullPolicy: Always
+
+  - name: maven
+    image: maven:3.6.0-jdk-8-alpine
+    imagePullPolicy: Always
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+      - name: maven-config
+        mountPath: /usr/share/maven/ref
+      - name: jenkins-maven-m2
+        mountPath: /root/.m2
+
+  - name: kubectl
+    image: dtzar/helm-kubectl:2.13.0
+    imagePullPolicy: Always
+    tty: true
+    volumeMounts:
+      - name: kube-config
+        mountPath: /root/.kube
+    env:
+    - name: KUBECONFIG
+      value: "/root/.kube/config"
+
+  volumes:
+  - name: docker-config
+    secret:
+      secretName: docker-config
+  - name: kube-config
+    secret:
+      secretName: kube-config
+  - name: maven-config
+    secret:
+      secretName: maven-config
+  - name: jenkins-maven-m2
+    persistentVolumeClaim:
+      claimName: jenkins-maven-m2
+"""
+)
 {
     node(label){
 
-        stage('Git clone'){
+        stage('Get sources'){
            container('jnlp'){
                 git branch: 'master', url: 'https://github.com/seblaporte/hello-spring-boot.git'
            }
         }
 
-        stage('Create image name'){
-            container('jnlp'){
-                sh  '''
-                git rev-parse --short HEAD > /share/buildVersion
-                echo "`cat /config/registryHost`/`cat /config/applicationName`:`cat /share/buildVersion`" > /share/imageName
-                '''
-            }
-        }
-
-        stage('Maven build'){
+        stage('Build with Maven'){
             container('maven'){
-                sh 'mvn -s /usr/share/maven/ref/settings.xml clean package'
+                sh 'mvn -s /usr/share/maven/ref/settings.xml clean package -DskipTests'
             }
         }
 
-        stage('Deploy artifact to Nexus'){
+        stage('Push artifact to Nexus'){
             container('maven'){
                 sh 'mvn -s /usr/share/maven/ref/settings.xml deploy'
+            }
+        }
+
+        stage('Build image and push to Docker registry'){
+            container(name: 'kaniko', shell: '/busybox/sh') {
+               withEnv(['PATH+EXTRA=/busybox:/kaniko']) {
+                 sh '''#!/busybox/sh
+                 /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cache=true --destination=registry.demo-pic.techlead-top.ovh/hello-spring-boot:latest
+                 '''
+               }
+            }
+        }
+
+        stage('Deploy to integration'){
+            container('kubectl'){
+                sh '''
+                kubectl patch deployment hello-spring-boot -p \
+                  '{"spec":{"template":{"metadata":{"labels":{"date":"'`date +'%s'`'"}}}}}'
+                '''
             }
         }
 

@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hello-spring-boot
+  namespace: demo-pic
+spec:
+  rules:
+  - host: hello-spring-boot.demo-pic.techlead-top.ovh
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: hello-spring-boot
+          servicePort: web
