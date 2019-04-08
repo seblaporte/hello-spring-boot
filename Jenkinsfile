@@ -90,7 +90,7 @@ spec:
 
         stage('Push artifact to Nexus'){
             container('maven'){
-                sh 'mvn -s /usr/share/maven/ref/settings.xml deploy -DskipTests'
+                sh 'mvn -s /usr/share/maven/ref/settings.xml deploy:deploy'
             }
         }
 
