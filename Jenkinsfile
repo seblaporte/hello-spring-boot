@@ -44,6 +44,16 @@ spec:
     - name: KUBECONFIG
       value: "/root/.kube/config"
 
+  - name: sonar-scanner
+      image: newtmitch/sonar-scanner:3.2.0-alpine
+      imagePullPolicy: Always
+      tty: true
+      command:
+      - cat
+      volumeMounts:
+      - name: sonar-scanner-config
+        mountPath: /root/sonar-scanner/conf/
+
   volumes:
   - name: docker-config
     secret:
@@ -57,6 +67,10 @@ spec:
   - name: jenkins-maven-m2
     persistentVolumeClaim:
       claimName: jenkins-maven-m2
+  - name: sonar-scanner-config
+    secret:
+      secretName: sonar-scanner-config
+
 """
 )
 {
@@ -71,6 +85,16 @@ spec:
         stage('Build with Maven'){
             container('maven'){
                 sh 'mvn -s /usr/share/maven/ref/settings.xml clean package -DskipTests'
+            }
+        }
+
+        stage('Sonar analysis'){
+            container('sonar-scanner'){
+                sh '''
+                cat /root/sonar-scanner/conf/sonar-scanner.properties
+                cat /home/jenkins/workspace/sonar-scanner/sonar-project.properties
+                sonar-scanner
+                '''
             }
         }
 
