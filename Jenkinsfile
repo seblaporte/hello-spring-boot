@@ -93,7 +93,6 @@ spec:
                 sh '''
                 cat /root/sonar-scanner/conf/sonar-scanner.properties
                 cat /home/jenkins/workspace/hello-spring-boot/sonar-project.properties
-                sleep 1200
                 sonar-scanner
                 '''
             }
