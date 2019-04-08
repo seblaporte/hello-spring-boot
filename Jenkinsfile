@@ -45,14 +45,14 @@ spec:
       value: "/root/.kube/config"
 
   - name: sonar-scanner
-      image: newtmitch/sonar-scanner:3.2.0-alpine
-      imagePullPolicy: Always
-      tty: true
-      command:
-      - cat
-      volumeMounts:
-      - name: sonar-scanner-config
-        mountPath: /root/sonar-scanner/conf/
+    image: newtmitch/sonar-scanner:3.2.0-alpine
+    imagePullPolicy: Always
+    tty: true
+    command:
+    - cat
+    volumeMounts:
+    - name: sonar-scanner-config
+      mountPath: /root/sonar-scanner/conf/
 
   volumes:
   - name: docker-config
