@@ -54,6 +54,20 @@ spec:
     - name: sonar-scanner-config
       mountPath: /root/sonar-scanner/conf/
 
+  - name: klar-scanner
+    image: registry.demo-pic.techlead-top.ovh/klar
+    imagePullPolicy: Always
+    tty: true
+    command:
+    - cat
+    env:
+    - name: CLAIR_ADDR
+      value: https://clair.demo-pic.techlead-top.ovh:443
+    - name: DOCKER_USER
+      value: docker
+    - name: DOCKER_PASSWORD
+      value: P@ssw0rd!
+
   volumes:
   - name: docker-config
     secret:
@@ -116,6 +130,12 @@ spec:
         stage('Sonar analysis'){
             container('sonar-scanner'){
                 sh 'sonar-scanner'
+            }
+        }
+
+        stage('Clair analysis'){
+            container('klar-scanner'){
+                sh 'klar registry.demo-pic.techlead-top.ovh/hello-spring-boot:latest'
             }
         }
 
