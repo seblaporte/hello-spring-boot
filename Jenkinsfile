@@ -139,7 +139,7 @@ spec:
 
         stage('Clair analysis'){
             container('klar-scanner'){
-                sh 'klar registry.demo-pic.techlead-top.ovh/hello-spring-boot:latest'
+                sh '/klar registry.demo-pic.techlead-top.ovh/hello-spring-boot:latest'
             }
         }
 
