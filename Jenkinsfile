@@ -7,6 +7,7 @@ metadata:
   name: jnlp-kaniko-maven-kubectl
 spec:
   containers:
+
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
     imagePullPolicy: Always
@@ -67,6 +68,9 @@ spec:
       value: docker
     - name: DOCKER_PASSWORD
       value: P@ssw0rd!
+
+  imagePullSecrets:
+  - name: docker-registry-config
 
   volumes:
   - name: docker-config
