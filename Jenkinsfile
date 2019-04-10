@@ -68,6 +68,10 @@ spec:
       value: docker
     - name: DOCKER_PASSWORD
       value: P@ssw0rd!
+    - name: CLAIR_OUTPUT
+      value: High
+    - name: CLAIR_THRESHOLD
+      value: 10
 
   imagePullSecrets:
   - name: docker-registry-config
