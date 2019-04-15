@@ -63,11 +63,20 @@ spec:
     - cat
     env:
     - name: CLAIR_ADDR
-      value: https://clair.demo-pic.techlead-top.ovh:443
+      valueFrom:
+        secretKeyRef:
+          name: clair-config
+          key: clairAddress
     - name: DOCKER_USER
-      value: docker
+      valueFrom:
+        secretKeyRef:
+          name: clair-config
+          key: dockerUser
     - name: DOCKER_PASSWORD
-      value: P@ssw0rd!
+      valueFrom:
+        secretKeyRef:
+          name: clair-config
+          key: dockerPassword
     - name: CLAIR_OUTPUT
       value: High
     - name: CLAIR_THRESHOLD
