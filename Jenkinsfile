@@ -119,23 +119,11 @@ spec:
             }
         }
 
-        stage('Push artifact to Nexus'){
-            when {
-                anyOf {
-                    branch 'master';
-                    branch 'staging'
-                }
-            }
-            container('maven'){
-                sh 'mvn -s /usr/share/maven/ref/settings.xml jar:jar deploy:deploy'
-            }
-        }
-
         stage('Build image and push to Docker registry'){
             container(name: 'kaniko', shell: '/busybox/sh') {
                withEnv(['PATH+EXTRA=/busybox:/kaniko']) {
                  sh '''#!/busybox/sh
-                 /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cache=true --destination=registry.demo-pic.techlead-top.ovh/hello-spring-boot:latest
+                 /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cache=true --destination=registry.demo-pic.techlead-top.ovh/hello-spring-boot:$BRANCH_NAME
                  '''
                }
             }
@@ -147,18 +135,6 @@ spec:
                 kubectl patch deployment hello-spring-boot -p \
                   '{"spec":{"template":{"metadata":{"labels":{"date":"'`date +'%s'`'"}}}}}'
                 '''
-            }
-        }
-
-        stage('Sonar analysis'){
-            container('sonar-scanner'){
-                sh 'sonar-scanner'
-            }
-        }
-
-        stage('Clair analysis'){
-            container('klar-scanner'){
-                sh '/klar registry.demo-pic.techlead-top.ovh/hello-spring-boot:latest'
             }
         }
 
