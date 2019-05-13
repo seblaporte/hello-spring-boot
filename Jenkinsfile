@@ -142,22 +142,22 @@ spec:
                   namespace: demo-pic
                 spec:
                   replicas: 1
+                  revisionHistoryLimit: 3
                   selector:
                     matchLabels:
                       app: hello-spring-boot
-                  revisionHistoryLimit: 3
                   template:
                     metadata:
                       labels:
                         app: hello-spring-boot
                     spec:
                       containers:
-                        - name: hello-spring-boot
-                          image: registry.demo-pic.techlead-top.ovh/hello-spring-boot:$BRANCH_NAME
-                          imagePullPolicy: Always
-                          ports:
-                            - name: web
-                              containerPort: 8080
+                      - name: hello-spring-boot
+                        image: registry.demo-pic.techlead-top.ovh/hello-spring-boot:$BRANCH_NAME
+                        imagePullPolicy: Always
+                        ports:
+                          - name: web
+                            containerPort: 8080
                       imagePullSecrets:
                         - name: docker-registry-config
                 EOF
