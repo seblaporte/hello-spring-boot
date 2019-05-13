@@ -120,6 +120,12 @@ spec:
         }
 
         stage('Push artifact to Nexus'){
+            when {
+                anyOf {
+                    branch 'master';
+                    branch 'staging'
+                }
+            }
             container('maven'){
                 sh 'mvn -s /usr/share/maven/ref/settings.xml jar:jar deploy:deploy'
             }
