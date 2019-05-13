@@ -132,8 +132,26 @@ spec:
         stage('Deploy to integration'){
             container('kubectl'){
                 sh '''
-                kubectl patch deployment hello-spring-boot -p \
-                  '{"spec":{"template":{"metadata":{"labels":{"date":"'`date +'%s'`'"}}}}}'
+                cat <<EOF | kubectl apply -f -
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: hello-spring-boot-$BRANCH_NAME
+                  namespace: demo-pic
+                spec:
+                  replicas: 1
+                  revisionHistoryLimit: 3
+                  template:
+                    spec:
+                      containers:
+                        - name: hello-spring-boot
+                          image: registry.demo-pic.techlead-top.ovh/hello-spring-boot:$BRANCH_NAME
+                          imagePullPolicy: Always
+                          ports:
+                            - name: web
+                              containerPort: 8080
+                      imagePullSecrets:
+                        - name: docker-registry-config
                 '''
             }
         }
