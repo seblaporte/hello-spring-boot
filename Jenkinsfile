@@ -147,9 +147,9 @@ spec:
                       app: hello-spring-boot
                   revisionHistoryLimit: 3
                   template:
-                  metadata:
-                    labels:
-                      app: hello-spring-boot
+                    metadata:
+                      labels:
+                        app: hello-spring-boot
                     spec:
                       containers:
                         - name: hello-spring-boot
