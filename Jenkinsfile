@@ -109,7 +109,7 @@ spec:
 
         stage('Get sources'){
            container('jnlp'){
-                git branch: 'master', url: 'https://github.com/seblaporte/hello-spring-boot.git'
+                git branch: BRANCH_NAME, url: 'https://github.com/seblaporte/hello-spring-boot.git'
            }
         }
 
