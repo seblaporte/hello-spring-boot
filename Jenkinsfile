@@ -160,6 +160,7 @@ spec:
                               containerPort: 8080
                       imagePullSecrets:
                         - name: docker-registry-config
+                EOF
                 '''
             }
         }
