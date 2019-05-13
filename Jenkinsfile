@@ -136,12 +136,20 @@ spec:
                 apiVersion: apps/v1
                 kind: Deployment
                 metadata:
+                  labels:
+                    app: hello-spring-boot
                   name: hello-spring-boot-$BRANCH_NAME
                   namespace: demo-pic
                 spec:
                   replicas: 1
+                  selector:
+                    matchLabels:
+                      app: hello-spring-boot
                   revisionHistoryLimit: 3
                   template:
+                  metadata:
+                    labels:
+                      app: hello-spring-boot
                     spec:
                       containers:
                         - name: hello-spring-boot
