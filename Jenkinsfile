@@ -140,6 +140,16 @@ spec:
             }
         }
 
+        stage('Sonar analysis'){
+            container('sonar-scanner'){
+                sh '''
+                cat /root/sonar-scanner/conf/sonar-scanner.properties
+                cat /home/jenkins/workspace/hello-spring-boot/sonar-project.properties
+                sonar-scanner
+                '''
+            }
+        }
+
         stage('Push artifact to Nexus'){
             container('maven'){
                 sh 'mvn -s /usr/share/maven/ref/settings.xml jar:jar deploy:deploy'
