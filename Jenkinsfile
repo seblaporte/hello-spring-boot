@@ -123,7 +123,8 @@ spec:
             container(name: 'kaniko', shell: '/busybox/sh') {
                withEnv(['PATH+EXTRA=/busybox:/kaniko']) {
                  sh '''#!/busybox/sh
-                 /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cache=false --destination=registry.demo-pic.techlead-top.ovh/hello-spring-boot:$BRANCH_NAME
+                 /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cache=true \
+                     --destination=registry.demo-pic.techlead-top.ovh/hello-spring-boot:$BRANCH_NAME
                  '''
                }
             }
@@ -132,7 +133,9 @@ spec:
         stage('Deploy to integration'){
             container('kubectl'){
                 sh '''
-                sed "s/BRANCH_NAME/$BRANCH_NAME/g; s/APPLY_TIMESTAMP/`date +%s`/g" k8s.yaml | kubectl apply -f -
+                sed "s/BRANCH_NAME/$BRANCH_NAME/g" k8s.yaml | kubectl apply -f -
+                kubectl patch deployment hello-spring-boot-$BRANCH_NAME -p \
+                    '{"spec":{"template":{"metadata":{"labels":{"date":"'`date +'%s'`'"}}}}}'
                 '''
             }
         }

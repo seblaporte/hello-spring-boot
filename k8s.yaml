@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   labels:
     app: hello-spring-boot-BRANCH_NAME
-    date: "APPLY_TIMESTAMP"
   name: hello-spring-boot-BRANCH_NAME
   namespace: demo-pic
 spec:
@@ -33,7 +32,6 @@ metadata:
   name: hello-spring-boot-BRANCH_NAME
   namespace: demo-pic
   labels:
-    date: "APPLY_TIMESTAMP"
 spec:
   selector:
     app: hello-spring-boot-BRANCH_NAME
@@ -48,7 +46,6 @@ metadata:
   name: hello-spring-boot-BRANCH_NAME
   namespace: demo-pic
   labels:
-    date: "APPLY_TIMESTAMP"
 spec:
   rules:
     - host: hello-spring-boot.BRANCH_NAME.demo-pic.techlead-top.ovh
