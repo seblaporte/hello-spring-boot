@@ -132,36 +132,26 @@ spec:
         stage('Deploy to integration'){
             container('kubectl'){
                 sh '''
-                cat <<EOF | kubectl apply -f -
-                apiVersion: apps/v1
-                kind: Deployment
-                metadata:
-                  labels:
-                    app: hello-spring-boot
-                  name: hello-spring-boot-$BRANCH_NAME
-                  namespace: demo-pic
-                spec:
-                  replicas: 1
-                  revisionHistoryLimit: 3
-                  selector:
-                    matchLabels:
-                      app: hello-spring-boot
-                  template:
-                    metadata:
-                      labels:
-                        app: hello-spring-boot
-                    spec:
-                      containers:
-                      - name: hello-spring-boot
-                        image: registry.demo-pic.techlead-top.ovh/hello-spring-boot:$BRANCH_NAME
-                        imagePullPolicy: Always
-                        ports:
-                          - name: web
-                            containerPort: 8080
-                      imagePullSecrets:
-                        - name: docker-registry-config
-                EOF
+                sed "s/BRANCH_NAME/$BRANCH_NAME/g" k8s.yaml | kubectl apply -f -
                 '''
+            }
+        }
+
+        stage('Push artifact to Nexus'){
+            container('maven'){
+                sh 'mvn -s /usr/share/maven/ref/settings.xml jar:jar deploy:deploy'
+            }
+        }
+
+        stage('Sonar analysis'){
+            container('sonar-scanner'){
+                sh 'sonar-scanner'
+            }
+        }
+
+        stage('Clair analysis'){
+            container('klar-scanner'){
+                sh '/klar registry.demo-pic.techlead-top.ovh/hello-spring-boot:$BRANCH_NAME'
             }
         }
 
