@@ -143,7 +143,6 @@ spec:
         stage('Sonar analysis'){
             container('sonar-scanner'){
                 sh '''
-                cat /root/sonar-scanner/conf/sonar-scanner.properties
                 sonar-scanner
                 '''
             }
