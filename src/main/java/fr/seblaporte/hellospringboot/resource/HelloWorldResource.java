@@ -10,7 +10,7 @@ public class HelloWorldResource {
     @GetMapping
     public HelloWordDto Hello() {
         HelloWordDto helloWordDto = new HelloWordDto();
-        helloWordDto.setMessage("Hello World");
+        helloWordDto.setMessage("Hello Apside !");
 
         return helloWordDto;
     }
