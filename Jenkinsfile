@@ -123,7 +123,7 @@ spec:
             container(name: 'kaniko', shell: '/busybox/sh') {
                withEnv(['PATH+EXTRA=/busybox:/kaniko']) {
                  sh '''#!/busybox/sh
-                 /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cache=true --destination=registry.demo-pic.techlead-top.ovh/hello-spring-boot:$BRANCH_NAME
+                 /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cache=false --destination=registry.demo-pic.techlead-top.ovh/hello-spring-boot:$BRANCH_NAME
                  '''
                }
             }
