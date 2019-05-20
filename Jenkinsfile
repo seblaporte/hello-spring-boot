@@ -53,7 +53,7 @@ spec:
     - cat
     volumeMounts:
     - name: sonar-scanner-config
-      mountPath: /root/sonar-scanner/conf/
+      mountPath: /usr/lib/sonar-scanner/conf/
 
   - name: klar-scanner
     image: registry.demo-pic.techlead-top.ovh/klar
