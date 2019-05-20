@@ -144,7 +144,6 @@ spec:
             container('sonar-scanner'){
                 sh '''
                 cat /root/sonar-scanner/conf/sonar-scanner.properties
-                cat /home/jenkins/workspace/hello-spring-boot/sonar-project.properties
                 sonar-scanner
                 '''
             }
