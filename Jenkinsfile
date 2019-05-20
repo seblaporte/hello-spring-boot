@@ -132,7 +132,7 @@ spec:
         stage('Deploy to integration'){
             container('kubectl'){
                 sh '''
-                sed "s/BRANCH_NAME/$BRANCH_NAME/g" k8s.yaml | kubectl apply -f -
+                sed "s/BRANCH_NAME/$BRANCH_NAME/g; s/APPLY_TIMESTAMP/`date +%s`/g" k8s.yaml | kubectl apply -f -
                 '''
             }
         }
@@ -140,12 +140,6 @@ spec:
         stage('Push artifact to Nexus'){
             container('maven'){
                 sh 'mvn -s /usr/share/maven/ref/settings.xml jar:jar deploy:deploy'
-            }
-        }
-
-        stage('Sonar analysis'){
-            container('sonar-scanner'){
-                sh 'sonar-scanner'
             }
         }
 
